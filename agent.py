@@ -22,6 +22,9 @@ class HumanAgent:
     def default_text_editor(self) -> str:
         return self.apps.default_text_editor()
 
+    def open_default_text_editor(self) -> None:
+        self.apps.open_default_text_editor()
+
     def move_mouse_human(self, x: int, y: int, **kw):
         self.mouse.move_mouse_human(x, y, **kw)
 
@@ -33,8 +36,23 @@ class HumanAgent:
 
     def human_type(self, text: str, **kw):
         """Apenas digita (não movimenta mouse automaticamente)."""
-        # Separado: nenhuma chamada de movimento de mouse aqui.
         self.typing.human_type(text, **kw)
+
+    # Novos atalhos de app
+    def close_active_application(self):
+        self.apps.close_active_application()
+
+    def open_vscode(self):
+        self.apps.open_vscode()
+
+    def open_teams(self):
+        self.apps.open_teams()
+
+    def open_onenote(self):
+        self.apps.open_onenote()
+
+    def open_insomnia(self):
+        self.apps.open_insomnia()
 
     def countdown(self, seconds: int = 3):
         for i in range(seconds, 0, -1):
@@ -45,10 +63,14 @@ class HumanAgent:
 if __name__ == "__main__":
     agent = HumanAgent()
     agent.countdown(3)
-    editor = agent.default_text_editor()
-    print(f"Abrindo editor: {editor}")
-    agent.open_application(editor)
+    print("Abrindo vscode...")
+    agent.open_vscode()
     time.sleep(3)
+    print("Abrindo editor padrão...")
+    agent.open_default_text_editor()
+    time.sleep(3)
+    print("Fechando app ativo...")
+    agent.close_active_application()
 
     # Exemplo estruturado: você controla explicitamente a ordem
     # 1. Mover mouse para uma área (exemplo coordenadas fictícias)
@@ -73,7 +95,17 @@ if __name__ == "__main__":
     time.sleep(3)
     agent.move_mouse_human(0, 1000)
     agent.click(600, 320)
+
+
+    texto3 = (
+        "Olá, isto é um teste? de digitação humana simulada. "
+        "O script insere erros aleatórios, usa backspace e continua.\n\n"
+        "Linha nova para demonstrar quebras. Fim.\n"
+        "input[type=\"text\"]:focus{box-shadow:0 0 0 4px rgba(37,99,235,0.06); border-color:var(--accent);}\n"
+        "..row{display:flex; gap:10px;}..small{flex:1;}\n..btn{ width:100%; padding:12px; border-radius:10px; border:0; background:var(--accent); color:white; font-weight:600; cursor:pointer; }\n"
+    )
+    agent.human_type(texto3, long_pause_chance=0.02, long_pause_range=(20, 40))
+    agent.move_mouse_human(1000, 600)
+    agent.move_mouse_human(100, 200)
     
-
-
     print("Concluído.")

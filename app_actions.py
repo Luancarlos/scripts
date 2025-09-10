@@ -3,6 +3,10 @@ from __future__ import annotations
 import os
 import platform
 import subprocess
+try:
+    import pyautogui  # type: ignore
+except Exception:
+    pyautogui = None  # type: ignore
 
 class AppActions:
     def open_application(self, name_or_path: str) -> None:
@@ -27,3 +31,69 @@ class AppActions:
         if system == 'windows':
             return 'notepad'
         return 'gedit'
+
+    # --- Novos métodos ---
+    def close_active_application(self) -> None:
+        system = platform.system().lower()
+        if not pyautogui:
+            return
+        if system == 'darwin':
+            pyautogui.hotkey('command', 'q')
+        else:
+            pyautogui.hotkey('alt', 'f4')
+
+    def open_vscode(self) -> None:
+        system = platform.system().lower()
+        if system == 'darwin':
+            self.open_application('Visual Studio Code')
+        elif system == 'windows':
+            # Tenta a CLI 'code' ou o executável instalado
+            try:
+                subprocess.Popen(['code'])
+            except Exception:
+                self.open_application('Code')
+        else:
+            try:
+                subprocess.Popen(['code'])
+            except Exception:
+                self.open_application('code')
+
+    def open_teams(self) -> None:
+        system = platform.system().lower()
+        if system == 'darwin':
+            self.open_application('Microsoft Teams')
+        elif system == 'windows':
+            # Protocolo registrado costuma existir
+            subprocess.Popen(['start', '', 'msteams:'], shell=True)
+        else:
+            self.open_application('teams')
+
+    def open_onenote(self) -> None:
+        system = platform.system().lower()
+        if system == 'darwin':
+            self.open_application('Microsoft OneNote')
+        elif system == 'windows':
+            subprocess.Popen(['start', '', 'onenote:'], shell=True)
+        else:
+            self.open_application('onenote')
+
+    def open_insomnia(self) -> None:
+        system = platform.system().lower()
+        if system == 'darwin':
+            self.open_application('Insomnia')
+        elif system == 'windows':
+            try:
+                subprocess.Popen(['insomnia'])
+            except Exception:
+                # Tenta via caminho padrão (pode variar)
+                self.open_application('Insomnia')
+        else:
+            try:
+                subprocess.Popen(['insomnia'])
+            except Exception:
+                self.open_application('insomnia')
+
+    def open_default_text_editor(self) -> None:
+        """Abre o editor de texto padrão do sistema."""
+        editor = self.default_text_editor()
+        self.open_application(editor)
