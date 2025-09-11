@@ -13,7 +13,7 @@ class TypingActions:
     def __init__(self,
                  min_char_delay: float = 0.035,
                  max_char_delay: float = 0.18,
-                 error_rate: float = 0.07):
+                 error_rate: float = 0.0):
         self.min_char_delay = min_char_delay
         self.max_char_delay = max_char_delay
         self.error_rate = error_rate
@@ -22,13 +22,18 @@ class TypingActions:
     def human_type(self, text: str, select_all: bool = False,
                    long_pause_chance: float = 0.012,
                    long_pause_range: Tuple[float, float] = (20.0, 120.0),
-                   on_long_pause=None) -> None:
+                   on_long_pause=None,
+                   allow_errors: bool = True) -> None:
+        """Digita texto de forma humana.
+        allow_errors: se False, desativa a simulação de erros de digitação.
+        """
         if not pyautogui:
             return
         if select_all:
             system_hotkey = ['command', 'a'] if pyautogui.platform.system().lower() == 'darwin' else ['ctrl', 'a']  # type: ignore
             pyautogui.hotkey(*system_hotkey)
             time.sleep(0.15)
+        effective_error_rate = self.error_rate if allow_errors else 0.0
         for token in text:
             if token in (' ', '\n', '.', '!', '?') and random.random() < long_pause_chance:
                 lp = random.uniform(*long_pause_range)
@@ -41,7 +46,7 @@ class TypingActions:
                 pyautogui.press('enter'); continue
             if token == '\t':
                 pyautogui.press('tab'); continue
-            if token.isalpha() and random.random() < self.error_rate:
+            if token.isalpha() and effective_error_rate > 0 and random.random() < effective_error_rate:
                 wrong = self._random_error_char(token)
                 pyautogui.typewrite(wrong)
                 time.sleep(random.uniform(0.05, 0.22))

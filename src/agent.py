@@ -2,9 +2,9 @@
 """Agente que combina módulos: AppActions, MouseActions, TypingActions."""
 from __future__ import annotations
 import time
-from app_actions import AppActions
-from mouse_actions import MouseActions
-from typing_actions import TypingActions
+from src.services.app_actions import AppActions
+from src.services.mouse_actions import MouseActions
+from src.services.typing_actions import TypingActions
 
 class HumanAgent:
     def __init__(self,

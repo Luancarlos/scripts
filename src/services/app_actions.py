@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import platform
 import subprocess
+import time
 try:
     import pyautogui  # type: ignore
 except Exception:
@@ -58,6 +59,20 @@ class AppActions:
             except Exception:
                 self.open_application('code')
 
+    def open_vscode_new_tab(self, wait_open: float = 3.0) -> None:
+        """Abre o VS Code e cria uma nova aba/arquivo (Cmd/Ctrl+N) para digitar."""
+        self.open_vscode()
+        # Aguarda a janela abrir/ganhar foco
+        time.sleep(wait_open)
+        if not pyautogui:
+            return
+        # Novo arquivo (não nova janela)
+        if platform.system().lower() == 'darwin':
+            pyautogui.hotkey('command', 'n')
+        else:
+            pyautogui.hotkey('ctrl', 'n')
+        time.sleep(0.3)
+
     def open_teams(self) -> None:
         system = platform.system().lower()
         if system == 'darwin':
@@ -97,3 +112,85 @@ class AppActions:
         """Abre o editor de texto padrão do sistema."""
         editor = self.default_text_editor()
         self.open_application(editor)
+
+    def press_enter(self) -> None:
+        """Pressiona a tecla Enter."""
+        if not pyautogui:
+            return
+        time.sleep(0.1)
+        pyautogui.press('enter')
+        time.sleep(0.2)
+
+    # Novas teclas direcionais
+    def press_left(self) -> None:
+        if not pyautogui:
+            return
+        pyautogui.press('left')
+
+    def press_right(self) -> None:
+        if not pyautogui:
+            return
+        pyautogui.press('right')
+
+    def press_up(self) -> None:
+        if not pyautogui:
+            return
+        pyautogui.press('up')
+
+    def press_down(self) -> None:
+        if not pyautogui:
+            return
+        pyautogui.press('down')
+
+    def press_page_down(self, times: int = 1) -> None:
+        """Pressiona Page Down 'times' vezes."""
+        if not pyautogui:
+            return
+        for _ in range(max(1, times)):
+            pyautogui.press('pagedown')
+            time.sleep(0.1)
+
+    def press_page_up(self, times: int = 1) -> None:
+        """Pressiona Page Up 'times' vezes."""
+        if not pyautogui:
+            return
+        for _ in range(max(1, times)):
+            pyautogui.press('pageup')
+            time.sleep(0.1)
+
+    def save_active_file(self) -> None:
+        """Dispara o atalho de salvar no app ativo (Cmd/Ctrl+S)."""
+        if not pyautogui:
+            return
+        time.sleep(0.1)
+        if platform.system().lower() == 'darwin':
+            pyautogui.hotkey('command', 's')
+        else:
+            pyautogui.hotkey('ctrl', 's')
+        time.sleep(0.2)
+
+    def save_active_file_as(self, file_path: str) -> None:
+        """Abre 'Salvar como', digita o caminho e confirma (Cmd/Ctrl+Shift+S)."""
+        if not pyautogui:
+            return
+        if platform.system().lower() == 'darwin':
+            pyautogui.hotkey('command', 'shift', 's')
+        else:
+            pyautogui.hotkey('ctrl', 'shift', 's')
+        time.sleep(0.6)
+        pyautogui.typewrite(file_path)
+        time.sleep(0.2)
+        pyautogui.press('enter')
+        time.sleep(0.4)
+        pyautogui.press('enter')
+
+    def go_to_end_of_file(self) -> None:
+        """Atalho para ir ao final do arquivo no editor ativo."""
+        if not pyautogui:
+            return
+        sys = platform.system().lower()
+        if sys == 'darwin':
+            pyautogui.hotkey('command', 'down')
+        else:
+            pyautogui.hotkey('ctrl', 'end')
+        time.sleep(0.1)

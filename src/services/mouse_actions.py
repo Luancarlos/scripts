@@ -14,6 +14,12 @@ class MouseActions:
             pyautogui.FAILSAFE = True
             pyautogui.PAUSE = 0
 
+    def get_mouse_position(self) -> tuple[int, int]:
+        if not pyautogui:
+            return
+        pos = pyautogui.position()
+        return pos.x, pos.y
+
     def move_mouse_human(self, x: int, y: int,
                          duration_range: Tuple[float, float] = (0.7, 1.8),
                          jitter: int = 2,
@@ -52,6 +58,20 @@ class MouseActions:
         time.sleep(random.uniform(0.05, 0.18))
         pyautogui.click(x, y, clicks=clicks, button=button)
 
+    def double_click(self, x: int, y: int) -> None:
+        if not pyautogui:
+            return
+        self.move_mouse_human(x, y)
+        time.sleep(random.uniform(0.04, 0.12))
+        pyautogui.doubleClick(x, y)
+
+    def right_click(self, x: int, y: int) -> None:
+        if not pyautogui:
+            return
+        self.move_mouse_human(x, y)
+        time.sleep(random.uniform(0.04, 0.12))
+        pyautogui.click(x, y, button='right')
+
     def scroll_human(self, clicks: int) -> None:
         if not pyautogui:
             return
@@ -61,6 +81,24 @@ class MouseActions:
             pyautogui.scroll(step)
             remaining -= step
             time.sleep(random.uniform(0.04, 0.12))
+
+    def move_relative(self, dx: int, dy: int, **kw) -> None:
+        if not pyautogui:
+            return
+        pos = pyautogui.position()
+        self.move_mouse_human(pos.x + dx, pos.y + dy, **kw)
+
+    def move_left(self, pixels: int, **kw) -> None:
+        self.move_relative(-abs(pixels), 0, **kw)
+
+    def move_right(self, pixels: int, **kw) -> None:
+        self.move_relative(abs(pixels), 0, **kw)
+
+    def move_up(self, pixels: int, **kw) -> None:
+        self.move_relative(0, -abs(pixels), **kw)
+
+    def move_down(self, pixels: int, **kw) -> None:
+        self.move_relative(0, abs(pixels), **kw)
 
     def _generate_curve(self, start: Tuple[int, int], end: Tuple[int, int], overshoot: bool) -> List[Tuple[int, int]]:
         (x1, y1), (x4, y4) = start, end
